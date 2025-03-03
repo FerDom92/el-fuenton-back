@@ -1,0 +1,55 @@
+{
+  "name": "el-fuenton-backend",
+  "version": "1.0.0",
+  "description": "Backend for El Fuenton Point of Sale System",
+  "main": "dist/server.js",
+  "scripts": {
+    "start": "node dist/server.js",
+    "dev": "nodemon src/server.ts",
+    "build": "tsc",
+    "lint": "eslint src --ext .ts",
+    "test": "jest",
+    "typeorm": "typeorm-ts-node-commonjs",
+    "migrate:create": "npm run typeorm migration:create",
+    "migrate:run": "npm run typeorm migration:run -- -d src/infrastructure/database/data-source.ts",
+    "migrate:revert": "npm run typeorm migration:revert -- -d src/infrastructure/database/data-source.ts"
+  },
+  "keywords": [
+    "pos",
+    "backend",
+    "typescript",
+    "node",
+    "express"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.1",
+    "express": "^4.18.2",
+    "express-validator": "^7.0.1",
+    "pg": "^8.11.3",
+    "reflect-metadata": "^0.2.1",
+    "typeorm": "^0.3.20",
+    "winston": "^3.11.0",
+    "bcrypt": "^5.1.1",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/jest": "^29.5.11",
+    "@types/node": "^20.11.10",
+    "@types/pg": "^8.10.9",
+    "@typescript-eslint/eslint-plugin": "^6.19.1",
+    "@typescript-eslint/parser": "^6.19.1",
+    "eslint": "^8.56.0",
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.3",
+    "ts-jest": "^29.1.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3",
+    "@types/bcrypt": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.5"
+  }
+}
