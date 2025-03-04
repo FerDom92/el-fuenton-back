@@ -19,7 +19,7 @@ export const AppDataSource = new DataSource({
   password: process.env.DB_PASSWORD || 'postgres',
   database: process.env.DB_DATABASE || 'el_fuenton',
   synchronize: process.env.DB_SYNCHRONIZE === 'true',
-  logging: process.env.NODE_ENV === 'development',
+  logging: ["error"],
   entities: [ProductEntity, ClientEntity, SaleEntity, SaleItemEntity, UserEntity],
   migrations: [InitialMigration1741025002357, CreateDefaultClient1741025057266, CreateUsersTable1741027684617],
   subscribers: [],

@@ -5,51 +5,42 @@ import { CreateUserDto, LoginDto, User, UserRepository } from '../../domain/enti
 import { BadRequestError, UnauthorizedError } from '../../domain/errors/AppError';
 
 export class AuthService {
-  constructor(private userRepository: UserRepository) {}
+  constructor(private userRepository: UserRepository) { }
 
   async register(data: CreateUserDto): Promise<{ user: User; token: string }> {
-    // Check if user already exists
     const existingUser = await this.userRepository.findByEmail(data.email);
     if (existingUser) {
       throw new BadRequestError('User with this email already exists');
     }
 
-    // Hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(data.password, salt);
 
-    // Create user with hashed password
     const user = await this.userRepository.create({
       ...data,
       password: hashedPassword,
       role: data.role || 'user'
     });
 
-    // Generate token
     const token = this.generateToken(user);
 
-    // Return user without password
     const { password, ...userWithoutPassword } = user;
     return { user: userWithoutPassword as User, token };
   }
 
   async login(data: LoginDto): Promise<{ user: User; token: string }> {
-    // Find user
     const user = await this.userRepository.findByEmail(data.email);
     if (!user) {
       throw new UnauthorizedError('Invalid email or password');
     }
 
-    // Verify password
     const validPassword = await bcrypt.compare(data.password, user.password!);
     if (!validPassword) {
       throw new UnauthorizedError('Invalid email or password');
     }
 
-    // Generate token
     const token = this.generateToken(user);
 
-    // Return user without password
     const { password, ...userWithoutPassword } = user;
     return { user: userWithoutPassword as User, token };
   }

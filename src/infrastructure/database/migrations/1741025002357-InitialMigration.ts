@@ -2,7 +2,6 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class InitialMigration1741025002357 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // Create products table
     await queryRunner.query(`
       CREATE TABLE products (
         id SERIAL PRIMARY KEY,
@@ -14,7 +13,6 @@ export class InitialMigration1741025002357 implements MigrationInterface {
       )
     `);
 
-    // Create clients table
     await queryRunner.query(`
       CREATE TABLE clients (
         id SERIAL PRIMARY KEY,
@@ -26,7 +24,6 @@ export class InitialMigration1741025002357 implements MigrationInterface {
       )
     `);
 
-    // Create sales table
     await queryRunner.query(`
       CREATE TABLE sales (
         id SERIAL PRIMARY KEY,
@@ -38,7 +35,6 @@ export class InitialMigration1741025002357 implements MigrationInterface {
       )
     `);
 
-    // Create sale_items table
     await queryRunner.query(`
       CREATE TABLE sale_items (
         id SERIAL PRIMARY KEY,
@@ -50,7 +46,6 @@ export class InitialMigration1741025002357 implements MigrationInterface {
       )
     `);
 
-    // Add index to improve search performance
     await queryRunner.query(`CREATE INDEX idx_products_name ON products(name)`);
     await queryRunner.query(`CREATE INDEX idx_clients_name ON clients(name)`);
     await queryRunner.query(`CREATE INDEX idx_clients_email ON clients(email)`);

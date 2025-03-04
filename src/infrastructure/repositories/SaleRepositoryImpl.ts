@@ -5,6 +5,7 @@ import { CreateSaleDto, Sale, SaleItem, UpdateSaleDto } from '../../domain/entit
 import { PaginatedResult, PaginationOptions } from '../../domain/repositories/PaginationOptions';
 import { SaleRepository } from '../../domain/repositories/SaleRepository';
 import { AppDataSource } from '../database/data-source';
+import { ClientEntity } from '../database/entities/client.entity';
 import { ProductEntity } from '../database/entities/product.entity';
 import { SaleItemEntity } from '../database/entities/sale-item.entity';
 import { SaleEntity } from '../database/entities/sale.entity';
@@ -12,10 +13,14 @@ import { SaleEntity } from '../database/entities/sale.entity';
 export class SaleRepositoryImpl implements SaleRepository {
   private saleRepository: Repository<SaleEntity>;
   private saleItemRepository: Repository<SaleItemEntity>;
+  private clientRepository: Repository<ClientEntity>;
+  private productRepository: Repository<ProductEntity>;
 
   constructor() {
     this.saleRepository = AppDataSource.getRepository(SaleEntity);
     this.saleItemRepository = AppDataSource.getRepository(SaleItemEntity);
+    this.clientRepository = AppDataSource.getRepository(ClientEntity);
+    this.productRepository = AppDataSource.getRepository(ProductEntity);
   }
 
   private mapEntityToDomain(entity: SaleEntity): Sale {
@@ -76,6 +81,30 @@ export class SaleRepositoryImpl implements SaleRepository {
         }
       }
     });
+
+    const items = entities.map(entity => this.mapEntityToDomain(entity));
+    const totalPages = Math.ceil(total / options.limit);
+
+    return {
+      items,
+      total,
+      totalPages,
+    };
+  }
+
+  async search(query: string, options: PaginationOptions): Promise<PaginatedResult<Sale>> {
+    const queryBuilder = this.saleRepository.createQueryBuilder('sale')
+      .leftJoinAndSelect('sale.client', 'client')
+      .leftJoinAndSelect('sale.items', 'items')
+      .leftJoinAndSelect('items.product', 'product')
+      .where('CAST(sale.id AS TEXT) LIKE :query', { query: `%${query}%` })
+      .orWhere('client.name LIKE :query', { query: `%${query}%` })
+      .orWhere('client.lastName LIKE :query', { query: `%${query}%` })
+      .orderBy('sale.date', 'DESC')
+      .skip((options.page - 1) * options.limit)
+      .take(options.limit);
+
+    const [entities, total] = await queryBuilder.getManyAndCount();
 
     const items = entities.map(entity => this.mapEntityToDomain(entity));
     const totalPages = Math.ceil(total / options.limit);
@@ -233,7 +262,26 @@ export class SaleRepositoryImpl implements SaleRepository {
       totalSold: Number(item.total_sold)
     }));
   }
+
+  async getTopClients(limit: number): Promise<{ clientId: number; clientName: string; totalSpent: number }[]> {
+    const queryResult = await this.saleRepository
+      .createQueryBuilder('sale')
+      .select('sale.client_id', 'clientId')
+      .addSelect('client.name', 'clientName')
+      .addSelect('client.last_name', 'clientLastName')
+      .addSelect('SUM(sale.total)', 'total_spent')
+      .innerJoin('clients', 'client', 'client.id = sale.client_id')
+      .groupBy('sale.client_id')
+      .addGroupBy('client.name')
+      .addGroupBy('client.last_name')
+      .orderBy('total_spent', 'DESC')
+      .limit(limit)
+      .getRawMany();
+
+    return queryResult.map(item => ({
+      clientId: Number(item.clientId),
+      clientName: `${item.clientName} ${item.clientLastName}`,
+      totalSpent: Number(item.total_spent)
+    }));
+  }
 }
-
-
-

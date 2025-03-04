@@ -15,8 +15,9 @@ export class SaleController {
     try {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
+      const search = req.query.search as string || '';
 
-      const result = await saleService.getAllSales({ page, limit });
+      const result = await saleService.getAllSales({ page, limit, search });
 
       res.json({
         items: result.items,
@@ -118,6 +119,41 @@ export class SaleController {
       const limit = parseInt(req.query.limit as string) || 10;
       const topProducts = await saleService.getTopSellingProducts(limit);
       res.json(topProducts);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getTopClients(req: Request, res: Response, next: NextFunction) {
+    try {
+      const limit = parseInt(req.query.limit as string) || 10;
+      const topClients = await saleService.getTopClients(limit);
+      res.json(topClients);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getProductSalesByDate(req: Request, res: Response, next: NextFunction) {
+    try {
+      const startDate = new Date(req.query.startDate as string);
+      const endDate = new Date(req.query.endDate as string);
+
+      if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+        return res.status(400).json({ message: 'Invalid date format' });
+      }
+
+      const productSales = await saleService.getProductSalesByDate(startDate, endDate);
+      res.json(productSales);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getDashboardStats(req: Request, res: Response, next: NextFunction) {
+    try {
+      const stats = await saleService.getDashboardStats();
+      res.json(stats);
     } catch (error) {
       next(error);
     }

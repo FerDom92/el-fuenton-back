@@ -3,7 +3,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class CreateUsersTable1741027684617 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // Create users table
+
     await queryRunner.query(`
       CREATE TABLE users (
         id SERIAL PRIMARY KEY,
@@ -16,10 +16,8 @@ export class CreateUsersTable1741027684617 implements MigrationInterface {
       )
     `);
 
-    // Add index for email
     await queryRunner.query(`CREATE INDEX idx_users_email ON users(email)`);
 
-    // Create default admin user
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash('admin123', salt);
 

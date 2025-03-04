@@ -9,5 +9,9 @@ saleRouter.get('/:id', saleController.getById);
 saleRouter.post('/', createSaleValidator, saleController.create);
 saleRouter.put('/:id', updateSaleValidator, saleController.update);
 saleRouter.delete('/:id', saleController.delete);
+
 saleRouter.get('/reports/by-date', saleController.getByDateRange);
 saleRouter.get('/reports/top-products', saleController.getTopSellingProducts);
+saleRouter.get('/reports/top-clients', saleController.getTopClients);
+saleRouter.get('/reports/product-sales-by-date', saleController.getProductSalesByDate);
+saleRouter.get('/reports/dashboard-stats', saleController.getDashboardStats);

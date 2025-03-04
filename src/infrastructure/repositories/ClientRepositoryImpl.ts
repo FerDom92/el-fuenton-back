@@ -94,7 +94,6 @@ export class ClientRepositoryImpl implements ClientRepository {
   }
 
   async delete(id: number): Promise<boolean> {
-    // Don't allow deletion of the default client
     if (id === 1) {
       throw new Error('Cannot delete the default client');
     }
@@ -108,7 +107,6 @@ export class ClientRepositoryImpl implements ClientRepository {
     let defaultClient = await this.repository.findOne({ where: { id: defaultClientId } });
 
     if (!defaultClient) {
-      // Create default client if it doesn't exist
       defaultClient = this.repository.create({
         id: defaultClientId,
         name: process.env.DEFAULT_CLIENT_NAME || 'Walk-in Customer',
