@@ -90,7 +90,7 @@ export class SaleRepositoryImpl implements SaleRepository {
   async create(data: CreateSaleDto): Promise<Sale> {
     return AppDataSource.transaction(async transactionalEntityManager => {
       const saleEntity = transactionalEntityManager.create(SaleEntity, {
-
+        clientId: data.clientId,
         total: data.total || 0,
         date: new Date()
       });

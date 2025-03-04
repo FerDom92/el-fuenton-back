@@ -5,7 +5,7 @@ export class CreateDefaultClient1741025057266 implements MigrationInterface {
     // Insert default client
     await queryRunner.query(`
       INSERT INTO clients (id, name, last_name, email)
-      VALUES (1, 'Walk-in Customer', 'Default', 'default@example.com')
+      VALUES (1, 'Sin cliente', 'Default', 'sin-cliente@cliente.com')
       ON CONFLICT (id) DO NOTHING
     `);
 

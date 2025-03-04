@@ -9,7 +9,7 @@ export class SaleService {
     private saleRepository: SaleRepository,
     private clientRepository: ClientRepository,
     private productRepository: ProductRepository
-  ) {}
+  ) { }
 
   async getSaleById(id: number): Promise<Sale | null> {
     return this.saleRepository.findById(id);
